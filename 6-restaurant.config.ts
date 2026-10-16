@@ -1,0 +1,20 @@
+export const config = {
+  name: "Mandi Darbar",
+  tagline: "Slow-cooked. Smoke-kissed. Served royal.",
+  city: "Hyderabad",
+  phone: "+91 98765 43210",
+  whatsapp: "919876543210",
+  address: "Plot 42, Road No. 36, Jubilee Hills, Hyderabad 500033",
+  hours: "12:00 PM - 11:30 PM, every day",
+  gstPct: 5,
+  packaging: 20,
+  freeDeliveryAbove: 999,
+  loyalty: { earnPer: 10, valueRs: 1 },
+  zones: [
+    { pin: "500081", area: "Madhapur", fee: 40, min: 299 },
+    { pin: "500032", area: "Gachibowli", fee: 50, min: 349 },
+    { pin: "500034", area: "Banjara Hills", fee: 30, min: 249 },
+    { pin: "500016", area: "Ameerpet", fee: 60, min: 399 },
+    { pin: "500084", area: "Kondapur", fee: 60, min: 399 },
+  ],
+};
