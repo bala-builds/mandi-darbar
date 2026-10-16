@@ -15,7 +15,7 @@ export default function Menu() {
   return (
     <div className="mx-auto max-w-7xl px-4 py-10">
       <h1 className="font-display text-4xl md:text-5xl">The menu</h1>
-      <p className="mt-2 text-cream/65">{dishes.length} dishes. Pick a portion, add what you like.</p>
+      <p className="mt-2 text-cream/65">{dishes.length} dishes. Browse the full menu and portion prices. Call or book a table to enjoy it.</p>
       <div className="sticky top-16 z-30 -mx-4 mt-6 space-y-3 bg-char/95 px-4 py-3 backdrop-blur">
         <input value={q} onChange={(e) => setQ(e.target.value)} placeholder="Search mandi, kebab, kunafa..." aria-label="Search the menu" className="input" />
         <div className="-mx-4 flex gap-2 overflow-x-auto px-4 pb-1">{["All", ...cats].map((c) => <button key={c} onClick={() => setCat(c)} aria-pressed={cat === c} className={chip(cat === c)}>{c}</button>)}</div>
