@@ -1,0 +1,21 @@
+@tailwind base; @tailwind components; @tailwind utilities;
+html { scroll-behavior: smooth; }
+body { background: #FAF6EE; color: #1F1A15; font-family: system-ui, -apple-system, "Segoe UI", Roboto, sans-serif; -webkit-font-smoothing: antialiased; }
+.font-display { font-family: "Iowan Old Style", "Palatino Linotype", Palatino, Georgia, serif; letter-spacing: -0.02em; font-weight: 500; }
+.arabesque { }
+@layer components {
+.btn { display:inline-flex; align-items:center; justify-content:center; gap:.5rem; border-radius:9999px; padding:.8rem 1.5rem; font-weight:600; transition:transform .15s, background .2s, box-shadow .2s; cursor:pointer; min-height:44px; }
+.btn:active { transform: scale(.97); }
+.btn-gold { background:#1F1A15; color:#FAF6EE; }
+.btn-gold:hover { background:#3a3028; }
+.btn-ghost { border:1px solid rgba(31,26,21,.25); color:#1F1A15; }
+.btn-ghost:hover { background: rgba(31,26,21,.05); }
+}
+.card { background:#fff; border:1px solid rgba(31,26,21,.09); border-radius:1rem; }
+.input { width:100%; background:#fff; border:1px solid rgba(31,26,21,.2); border-radius:.75rem; padding:.75rem 1rem; color:#1F1A15; min-height:44px; }
+.input:focus { outline:2px solid #1F1A15; outline-offset:1px; }
+.label { font-size:.8rem; color:rgba(31,26,21,.65); margin-bottom:.3rem; display:block; }
+*:focus-visible { outline:2px solid #1F1A15; outline-offset:2px; }
+@media (prefers-reduced-motion: reduce) { * { animation: none !important; transition: none !important; } }
+@keyframes steam { 0%{ transform: translateY(0) scale(1); opacity:.0 } 30%{opacity:.5} 100%{ transform: translateY(-40px) scale(1.6); opacity:0 } }
+.steam { animation: steam 3.5s ease-out infinite; }
