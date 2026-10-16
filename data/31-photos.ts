@@ -1,0 +1,21 @@
+export const dishPhoto: Record<string, string> = {
+ "chicken-fahm-mandi": "fahm",
+ "mutton-fahm-mandi": "fahm",
+ "chicken-65-mandi": "c65",
+ "mutton-haneeth": "haneeth",
+ "lamb-ribs-mandi": "ribs",
+ "prawns-mandi": "prawns",
+ "chicken-tikka": "tikka",
+ "malai-tikka": "tikka",
+ "paneer-tikka": "tikka",
+ "chicken-shawarma-plate": "shawarma",
+ "hummus-khubz": "hummus",
+ "mutabbal": "hummus",
+ "kunafa": "kunafa",
+ "rooh-afza-falooda": "falooda",
+ "sulaimani-chai": "chai",
+ "karak-chai": "chai",
+ "royal-family-tray": "tray",
+ "darbar-feast-tray": "tray",
+ "sultan-mega-tray": "tray"
+};
