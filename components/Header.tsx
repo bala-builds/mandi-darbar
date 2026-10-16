@@ -2,15 +2,10 @@
 import { Icon } from "./Icons";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
-import { useEffect, useState } from "react";
-import { useCart } from "@/store/cart";
 import { config } from "@/restaurant.config";
 const links = [["Menu", "/menu"], ["Reserve", "/reservations"], ["Catering", "/catering"], ["Offers", "/offers"], ["Our story", "/about"], ["Contact", "/contact"]];
 export function Header() {
   const path = usePathname();
-  const lines = useCart((s) => s.lines); const setOpen = useCart((s) => s.setOpen);
-  const [mounted, setMounted] = useState(false); useEffect(() => setMounted(true), []);
-  const count = mounted ? lines.reduce((s, l) => s + l.qty, 0) : 0;
   if (path.startsWith("/admin")) return null;
   return (
     <header className="sticky top-0 z-40 border-b border-black/10 bg-char/90 backdrop-blur-lg">
@@ -22,11 +17,8 @@ export function Header() {
           {links.map(([n, h]) => <Link key={h} href={h} className={`text-sm transition hover:text-saffron ${path === h ? "text-saffron" : "text-cream/80"}`}>{n}</Link>)}
         </nav>
         <div className="flex items-center gap-2">
-          <button onClick={() => setOpen(true)} className="btn btn-ghost relative !px-4" aria-label={`Open cart, ${count} items`}>
-            <Icon n="cart" /><span className="hidden sm:inline">Cart</span>
-            {count > 0 && <span className="absolute -right-1 -top-1 grid h-5 min-w-5 place-items-center rounded-full bg-saffron px-1 text-xs font-bold text-ink">{count}</span>}
-          </button>
-          <Link href="/menu" className="btn btn-gold hidden whitespace-nowrap sm:inline-flex">Order now</Link>
+          <a href={`tel:${config.phone.replace(/\s/g, "")}`} className="btn btn-ghost hidden whitespace-nowrap sm:inline-flex">Call us</a>
+          <Link href="/reservations" className="btn btn-gold whitespace-nowrap">Book a table</Link>
         </div>
       </div>
     </header>
