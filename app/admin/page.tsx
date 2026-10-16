@@ -1,7 +1,7 @@
 "use client";
 import { useEffect, useState } from "react";
 import Link from "next/link";
-import { useData, STAGES, Order } from "@/store/orders";
+import { useData } from "@/store/orders";
 import { dishes } from "@/data/dishes";
 import { inr } from "@/lib/format";
 import { toast } from "@/components/Toast";
@@ -19,10 +19,10 @@ export default function Admin() {
   return <Dash role={role} out={() => { sessionStorage.removeItem("md-role"); setRole(null); }} />;
 }
 function Dash({ role, out }: { role: "owner" | "staff"; out: () => void }) {
-  const tabs = role === "owner" ? ["Overview", "Live orders", "Menu", "Reservations", "Enquiries", "Settings"] : ["Live orders", "Reservations"];
+  const tabs = role === "owner" ? ["Overview", "Menu", "Reservations", "Enquiries", "Settings"] : ["Reservations"];
   const [tab, setTab] = useState(tabs[0]);
   const d = useData();
-  const newCount = d.orders.filter((o) => o.stage === 0 && !o.rejected).length;
+  const newCount = d.reservations.filter((r) => r.status === "Pending").length;
   return (
     <div className="min-h-screen lg:grid lg:grid-cols-[230px_1fr]">
       <aside className="border-b border-saffron/15 bg-char2 p-3 lg:min-h-screen lg:border-b-0 lg:border-r lg:p-5">
@@ -31,39 +31,21 @@ function Dash({ role, out }: { role: "owner" | "staff"; out: () => void }) {
         <div className="mt-3 flex gap-2 lg:mt-8 lg:flex-col"><Link href="/" className="btn btn-ghost !min-h-10 !py-1 text-sm">View site</Link><button onClick={out} className="btn btn-ghost !min-h-10 !py-1 text-sm">Sign out</button></div>
       </aside>
       <section className="min-w-0 p-4 lg:p-8">
-        {tab === "Overview" && <Overview />}{tab === "Live orders" && <Board />}{tab === "Menu" && <MenuMgr />}{tab === "Reservations" && <Resv />}{tab === "Enquiries" && <Enq />}{tab === "Settings" && <Settings />}
+        {tab === "Overview" && <Overview />}{tab === "Menu" && <MenuMgr />}{tab === "Reservations" && <Resv />}{tab === "Enquiries" && <Enq />}{tab === "Settings" && <Settings />}
       </section>
     </div>
   );
 }
 const H = ({ t, children }: { t: string; children?: React.ReactNode }) => <div className="mb-6 flex flex-wrap items-center justify-between gap-3"><h1 className="font-display text-3xl font-bold">{t}</h1>{children}</div>;
 function Overview() {
-  const { orders, reservations, soldOut } = useData();
-  const today = orders.filter((o) => new Date(o.at).toDateString() === new Date().toDateString() && !o.rejected);
-  const rev = today.reduce((s, o) => s + o.totals.total, 0); const all = orders.filter((o) => !o.rejected);
-  const aov = all.length ? all.reduce((s, o) => s + o.totals.total, 0) / all.length : 0;
-  const days = Array.from({ length: 14 }, (_, i) => { const dt = new Date(Date.now() - (13 - i) * 864e5).toDateString(); return { l: new Date(dt).getDate(), v: all.filter((o) => new Date(o.at).toDateString() === dt).reduce((s, o) => s + o.totals.total, 0) }; });
-  const mx = Math.max(1, ...days.map((x) => x.v));
-  const counts: Record<string, number> = {}; all.forEach((o) => o.lines.forEach((l) => (counts[l.slug] = (counts[l.slug] || 0) + l.qty)));
-  const top = Object.entries(counts).sort((a, b) => b[1] - a[1]).slice(0, 5);
-  const resToday = reservations.filter((r) => r.date === new Date().toISOString().slice(0, 10)).length;
+  const { reservations, enquiries, soldOut } = useData();
+  const today = new Date().toISOString().slice(0, 10);
+  const resToday = reservations.filter((r) => r.date === today).length;
+  const guests = reservations.filter((r) => r.date === today).reduce((s, r) => s + r.size, 0);
+  const newEnq = enquiries.filter((e) => e.status === "New").length;
   return (<><H t="Overview" />
-    <div className="grid grid-cols-2 gap-3 lg:grid-cols-4">{[["Orders today", today.length], ["Revenue today", inr(rev)], ["Avg order", inr(aov)], ["Reservations today", resToday]].map(([k, v]) => <div key={k as string} className="card p-4"><p className="text-xs text-cream/55">{k}</p><p className="mt-1 font-display text-2xl font-bold text-saffron">{v}</p></div>)}</div>
-    <div className="mt-6 grid gap-4 lg:grid-cols-3"><div className="card p-5 lg:col-span-2"><h2 className="font-display text-lg">Sales, last 14 days</h2><div className="mt-4 flex h-44 items-stretch gap-1.5" role="img" aria-label="Sales bar chart">{days.map((x, i) => <div key={i} className="flex flex-1 flex-col items-center justify-end gap-1"><div className="flex w-full flex-1 items-end"><div className="w-full rounded-t bg-ink/80" style={{ height: `${(x.v / mx) * 100}%`, minHeight: x.v ? 4 : 1 }} title={inr(x.v)} /></div><span className="text-[10px] text-cream/50">{x.l}</span></div>)}</div></div>
-      <div className="card p-5"><h2 className="font-display text-lg">Top dishes</h2><ol className="mt-3 space-y-2 text-sm">{top.map(([s, n]) => <li key={s} className="flex justify-between"><span>{dishes.find((x) => x.slug === s)?.name}</span><b>{n}</b></li>)}</ol>{soldOut.length > 0 && <p className="mt-4 rounded-lg bg-copper/20 p-2 text-xs">⚠ Sold out: {soldOut.length} dishes</p>}</div></div></>);
-}
-const cols = [["New", [0]], ["Preparing", [1, 2]], ["Out / Ready", [3]], ["Done", [4]]] as const;
-function Board() {
-  const { orders, advance, reject, addOrder } = useData();
-  const kot = (o: Order) => { const w = window.open("", "_blank", "width=320,height=480"); if (!w) return; w.document.write(`<pre style="font:14px monospace">KOT ${o.id}\n${o.type.toUpperCase()}\n----------\n${o.lines.map((l) => `${l.qty} x ${dishes.find((d) => d.slug === l.slug)?.name} (${l.portion})${l.note ? "\n  *" + l.note : ""}`).join("\n")}</pre>`); w.print(); };
-  const simulate = () => { const dsh = dishes[Math.floor(Math.random() * 14)]; const p = dsh.portions[0].price; const g = Math.round(p * 0.05); addOrder({ id: "MD" + Math.floor(6000 + Math.random() * 999), at: Date.now(), name: ["Zoya", "Arjun", "Nasreen"][Math.floor(Math.random() * 3)], phone: "9876500000", type: "delivery", address: "Kondapur, Hyderabad", pay: "UPI", lines: [{ key: dsh.slug, slug: dsh.slug, portion: dsh.portions[0].label, qty: 1, addOns: [], note: "" }], totals: { subtotal: p, discount: 0, gst: g, packaging: 20, delivery: 40, tip: 0, total: p + g + 60 }, stage: 0 }); toast("New order received"); };
-  const live = orders.filter((o) => !o.rejected && (o.stage < 4 || Date.now() - o.at < 36e5));
-  return (<><H t="Live orders"><button onClick={simulate} className="btn btn-gold !py-2">Simulate incoming order</button></H>
-    <div className="grid gap-4 md:grid-cols-2 xl:grid-cols-4">{cols.map(([name, st]) => { const items = live.filter((o) => (st as readonly number[]).includes(o.stage)); return (
-      <div key={name} className="rounded-2xl bg-char2/60 p-3"><p className="mb-3 flex justify-between text-sm font-semibold">{name}<span className="rounded-full bg-cream/10 px-2 text-xs">{items.length}</span></p>
-        <div className="space-y-3">{items.length === 0 && <p className="py-6 text-center text-xs text-cream/40">Nothing here</p>}{items.slice(0, 8).map((o) => (
-          <div key={o.id} className="card p-3 text-sm"><div className="flex justify-between"><b>{o.id}</b><span className="text-saffron">{inr(o.totals.total)}</span></div><p className="text-cream/60">{o.name} · {o.type}</p><p className="mt-1 text-xs text-cream/50">{o.lines.map((l) => `${l.qty}× ${dishes.find((d) => d.slug === l.slug)?.name}`).join(", ")}</p>
-            <div className="mt-2 flex flex-wrap gap-1.5">{o.stage < 4 && <button onClick={() => advance(o.id)} className="rounded-full bg-saffron px-3 py-1.5 text-xs font-semibold text-ink">{o.stage === 0 ? "Accept" : `Mark ${STAGES[o.stage + 1]}`}</button>}{o.stage === 0 && <button onClick={() => { const w = prompt("Reason for rejecting?"); if (w) reject(o.id, w); }} className="rounded-full border border-red-400/50 px-3 py-1.5 text-xs text-red-300">Reject</button>}<button onClick={() => kot(o)} className="rounded-full border border-cream/25 px-3 py-1.5 text-xs">KOT</button><Link href={`/order/${o.id}`} className="rounded-full border border-cream/25 px-3 py-1.5 text-xs">Track</Link></div></div>))}</div></div>); })}</div></>);
+    <div className="grid grid-cols-2 gap-3 lg:grid-cols-4">{[["Reservations today", resToday], ["Guests today", guests], ["New enquiries", newEnq], ["Sold out dishes", soldOut.length]].map(([k, v]) => <div key={k as string} className="card p-4"><p className="text-xs text-cream/50">{k}</p><p className="mt-1 font-display text-2xl font-bold">{v}</p></div>)}</div>
+  </>);
 }
 function MenuMgr() {
   const { soldOut, toggleStock } = useData(); const [q, setQ] = useState("");
