@@ -11,7 +11,7 @@ import { inr } from "@/lib/format";
 const reviews = [
   ["Ayesha K.", "The Fahm Mandi is the real deal. Smoky, juicy, and the rice alone is worth the order.", 5],
   ["Imran S.", "Booked the majlis seating for 8. Sitting on the floor, sharing one tray. Felt like Yemen in Jubilee Hills.", 5],
-  ["Rahul V.", "Delivery in 35 minutes and still piping hot. The zhug is dangerous.", 4],
+  ["Rahul V.", "Booked the family hall for twelve and the tray was piping hot. The zhug is dangerous.", 4],
 ] as const;
 export default function Home() {
   const [open, setOpen] = useState<Dish | null>(null);
@@ -25,14 +25,14 @@ export default function Home() {
           <motion.div initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} transition={{ duration: 0.7 }}>
             <p className="mb-4 inline-block text-xs font-semibold uppercase tracking-[0.2em] text-saffron">Hyderabad's Mandi house</p>
             <h1 className="font-display text-5xl font-medium leading-[1.05] md:text-7xl">Slow-cooked.<br />Smoke-kissed.<br />Served royal.</h1>
-            <p className="mt-5 max-w-lg text-lg text-cream/75">Basmati steamed in meat stock, whole spices, and meat that falls off the bone. Order online or book a table for the family.</p>
-            <div className="mt-8 flex flex-wrap gap-3"><Link href="/menu" className="btn btn-gold">Order now</Link><Link href="/reservations" className="btn btn-ghost">Book a table</Link></div>
-            <dl className="mt-10 grid max-w-md grid-cols-3 gap-4 text-center"><div><dt className="text-xs text-cream/50">Rating</dt><dd className="font-display text-2xl">4.8★</dd></div><div><dt className="text-xs text-cream/50">Delivery</dt><dd className="font-display text-2xl">35 min</dd></div><div><dt className="text-xs text-cream/50">Open</dt><dd className="font-display text-2xl">12 - 11:30</dd></div></dl>
+            <p className="mt-5 max-w-lg text-lg text-cream/75">Basmati steamed in meat stock, whole spices, and meat that falls off the bone. Book a table for the family or call us to plan your visit.</p>
+            <div className="mt-8 flex flex-wrap gap-3"><Link href="/reservations" className="btn btn-gold">Book a table</Link><Link href="/menu" className="btn btn-ghost">View menu</Link></div>
+            <dl className="mt-10 grid max-w-md grid-cols-3 gap-4 text-center"><div><dt className="text-xs text-cream/50">Rating</dt><dd className="font-display text-2xl">4.8★</dd></div><div><dt className="text-xs text-cream/50">Dine-in</dt><dd className="font-display text-2xl">Family hall</dd></div><div><dt className="text-xs text-cream/50">Open</dt><dd className="font-display text-2xl">12 - 11:30</dd></div></dl>
           </motion.div>
           <motion.div initial={{ opacity: 0, scale: 0.9 }} animate={{ opacity: 1, scale: 1 }} transition={{ duration: 0.8, delay: 0.1 }} className="relative mx-auto aspect-square w-full max-w-md">
             
             <div className="absolute inset-0 overflow-hidden rounded-[2rem]">{/* eslint-disable-next-line @next/next/no-img-element */}<img src="/img/hero.jpg" alt="Chicken mandi on a copper platter" className="h-full w-full scale-110 object-cover" /></div>
-                        <div className="absolute -bottom-4 left-4 rounded-xl bg-white px-4 py-3 shadow-sm ring-1 ring-black/10"><p className="text-xs text-cream/60">Most ordered</p><p className="font-display font-bold">Chicken Fahm Mandi</p></div>
+                        <div className="absolute -bottom-4 left-4 rounded-xl bg-white px-4 py-3 shadow-sm ring-1 ring-black/10"><p className="text-xs text-cream/60">House favourite</p><p className="font-display font-bold">Chicken Fahm Mandi</p></div>
           </motion.div>
         </div>
       </section>
@@ -41,12 +41,12 @@ export default function Home() {
         <div className="card flex flex-col items-start gap-4 p-6 md:flex-row md:items-center">
           <div className="h-24 w-24 shrink-0 overflow-hidden rounded-2xl"><Plate dish={special} /></div>
           <div className="flex-1"><p className="text-xs font-semibold uppercase tracking-[0.2em] text-saffron">Today's special</p><h2 className="font-display text-2xl font-bold">{special.name}</h2><p className="text-cream/70">{special.desc}</p></div>
-          <button onClick={() => setOpen(special)} className="btn btn-gold">Order · from {inr(special.portions[0].price)}</button>
+          <button onClick={() => setOpen(special)} className="btn btn-gold">View · from {inr(special.portions[0].price)}</button>
         </div>
       </section>
 
       <section className="mx-auto max-w-7xl px-4 pt-20">
-        <Heading eyebrow="Signature dishes" title="What everyone orders" />
+        <Heading eyebrow="Signature dishes" title="What everyone loves" />
         <div className="-mx-4 flex snap-x gap-4 overflow-x-auto px-4 pb-4 md:mx-0 md:grid md:grid-cols-2 md:overflow-visible md:px-0 lg:grid-cols-4">
           {sig.map((d) => <div key={d.slug} className="w-[78%] shrink-0 snap-start md:w-auto"><DishCard dish={d} onOpen={setOpen} /></div>)}
         </div>
